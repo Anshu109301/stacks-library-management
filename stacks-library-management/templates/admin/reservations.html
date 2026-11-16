@@ -1,0 +1,34 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Reservations{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Catalog</div>
+    <h1>Reservations</h1>
+    <p>{{ reservations|length }} active hold(s) on titles that are currently out.</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Member</th><th>Book</th><th>Reserved on</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for r in reservations %}
+      <tr>
+        <td><a href="{{ url_for('admin_member_detail', member_id=r.member_id) }}">{{ r.member_name }}</a><br><small class="id-tag">{{ r.member_code }}</small></td>
+        <td>{{ r.book_name }}</td>
+        <td>{{ r.reserved_date }}</td>
+        <td>{% if r.quantity > 0 %}<span class="badge badge-active">{{ r.quantity }} in stock — ready</span>{% else %}<span class="muted">Still out</span>{% endif %}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin_cancel_reservation', res_id=r.id) }}" data-confirm="Cancel this reservation?">
+            <button type="submit" class="btn btn-outline btn-sm">Cancel</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="5">No active reservations.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

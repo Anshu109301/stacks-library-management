@@ -1,0 +1,40 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Manage members{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Members</div>
+    <h1>Manage members</h1>
+    <p>{{ members|length }} member(s) on file.</p>
+  </div>
+  <div class="actions-row" style="margin-top:0;">
+    <a href="{{ url_for('admin_add_member') }}" class="btn btn-primary">Add Member</a>
+    <a href="{{ url_for('admin_export', kind='members') }}" class="btn btn-outline">Export CSV</a>
+  </div>
+</div>
+
+<form method="get" class="search-bar" style="max-width:380px;">
+  <input type="text" name="q" placeholder="Search by name, Member ID or email…" value="{{ search }}">
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Member ID</th><th>Name</th><th>Plan</th><th>Expiry</th><th>Joined</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td class="id-tag">{{ m.member_code }}</td>
+        <td><a href="{{ url_for('admin_member_detail', member_id=m.id) }}">{{ m.name }}</a></td>
+        <td><span class="badge {{ 'badge-pro' if m.plan == 'Pro' else 'badge-normal' }}">{{ m.plan }}</span></td>
+        <td>{{ m.expiry }}</td>
+        <td>{{ m.joined }}</td>
+        <td><span class="badge {{ 'badge-expired' if m.expired else 'badge-active' }}">{{ 'Expired' if m.expired else 'Active' }}</span></td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="6">No members match that search.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

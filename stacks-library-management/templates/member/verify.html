@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Verify Membership{% endblock %}
+{% block body %}
+<div class="center-stage">
+  <div class="auth-card" style="position:relative;">
+    <a href="{{ url_for('home') }}" class="btn btn-outline btn-sm" aria-label="Close and return to home"
+       style="position:absolute; top:16px; right:16px; padding:4px 10px;">✕</a>
+    <div class="brand-mark" style="margin:0 auto 16px;">S</div>
+    <h1>Verify Membership</h1>
+
+    <div class="tabs" role="tablist" style="display:flex; gap:8px; margin:16px 0;">
+      <button type="button" id="tabIdBtn" class="btn btn-primary btn-sm" role="tab" aria-selected="true"
+              onclick="showTab('id')" style="flex:1;">Member ID</button>
+      <button type="button" id="tabNameBtn" class="btn btn-outline btn-sm" role="tab" aria-selected="false"
+              onclick="showTab('name')" style="flex:1;">Find by name</button>
+    </div>
+
+    <div id="tabId" role="tabpanel">
+      <p class="sub">Enter your Member ID to access your dashboard.</p>
+      <form method="post" id="memberVerifyForm">
+        <div class="field">
+          <label for="member_id">Member ID</label>
+          <input type="text" id="member_id" name="member_id" placeholder="LIB10245" autocomplete="off"
+                 {% if not name_results %}autofocus{% endif %}>
+        </div>
+        <button type="submit" class="btn btn-primary" id="memberVerifySubmit" style="width:100%; justify-content:center;">Verify Member</button>
+      </form>
+      <p class="help-text" style="text-align:center; margin-top:16px;">Don't have a Member ID? Ask library staff to register you.</p>
+    </div>
+
+    <div id="tabName" role="tabpanel" style="display:none;">
+      <p class="sub">Search by name to find your Member ID hint — you'll still need the full ID to sign in.</p>
+      <form method="post" id="nameSearchForm">
+        <div class="field">
+          <label for="lookup_name">Your name</label>
+          <input type="text" id="lookup_name" name="lookup_name" value="{{ name_query }}"
+                 placeholder="e.g. Ananya Sharma" autocomplete="off" {% if name_results is not none %}autofocus{% endif %}>
+        </div>
+        <button type="submit" class="btn btn-outline" style="width:100%; justify-content:center;">Search</button>
+      </form>
+
+      {% if name_results %}
+      <div style="margin-top:16px;">
+        <p class="muted" style="font-size:0.85rem;">
+          {% if name_results|length == 1 %}Found 1 match — is this you?{% else %}Found {{ name_results|length }} matches — find your record below:{% endif %}
+        </p>
+        {% for match in name_results %}
+        <div class="panel" style="margin-bottom:8px; padding:12px;">
+          <strong>{{ match.name }}</strong>
+          <div class="muted" style="font-size:0.85rem;">
+            {{ match.masked_code }} · {{ match.plan }} plan · joined {{ match.joined_date }}
+          </div>
+        </div>
+        {% endfor %}
+        <p class="help-text">Recognize your record? Switch to the <strong>Member ID</strong> tab and enter your full ID to continue. Don't remember it? Ask library staff — for your security we never display a full Member ID from a name search.</p>
+      </div>
+      {% elif name_results is not none %}
+      <div class="empty-state" style="margin-top:12px;"><p>No members found with that name.</p></div>
+      {% endif %}
+    </div>
+
+    <a href="{{ url_for('home') }}" class="help-text" style="display:block; text-align:center; margin-top:8px;">← Back to home</a>
+  </div>
+</div>
+<script>
+  document.getElementById('memberVerifyForm').addEventListener('submit', function () {
+    var btn = document.getElementById('memberVerifySubmit');
+    btn.disabled = true;
+    btn.textContent = 'Verifying…';
+  });
+
+  function showTab(tab) {
+    var idPanel = document.getElementById('tabId');
+    var namePanel = document.getElementById('tabName');
+    var idBtn = document.getElementById('tabIdBtn');
+    var nameBtn = document.getElementById('tabNameBtn');
+    var showId = tab === 'id';
+    idPanel.style.display = showId ? '' : 'none';
+    namePanel.style.display = showId ? 'none' : '';
+    idBtn.classList.toggle('btn-primary', showId);
+    idBtn.classList.toggle('btn-outline', !showId);
+    idBtn.setAttribute('aria-selected', showId);
+    nameBtn.classList.toggle('btn-primary', !showId);
+    nameBtn.classList.toggle('btn-outline', showId);
+    nameBtn.setAttribute('aria-selected', !showId);
+  }
+
+  {% if name_results is not none %}
+  // A name search just ran (and produced this page via POST) — land on
+  // that tab instead of snapping back to the Member ID tab.
+  showTab('name');
+  {% endif %}
+</script>
+{% endblock %}

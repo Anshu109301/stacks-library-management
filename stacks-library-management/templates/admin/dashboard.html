@@ -1,0 +1,91 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Overview</div>
+    <h1>{{ greeting }}, {{ session.get('admin_username','admin')|capitalize }} 👋</h1>
+    <p>A live snapshot of the collection, membership, and anything that needs attention.</p>
+  </div>
+  <div class="actions-row" style="margin-top:0;">
+    <a href="{{ url_for('admin_export', kind='books') }}" class="btn btn-outline btn-sm">Export books CSV</a>
+    <a href="{{ url_for('admin_export', kind='members') }}" class="btn btn-outline btn-sm">Export members CSV</a>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-tile"><div class="stat-label">Total genres</div><div class="stat-value">{{ stats.total_genres }}</div><div class="stat-sub">{{ stats.titles }} titles across them</div></div>
+  <div class="stat-tile"><div class="stat-label">Available books</div><div class="stat-value">{{ stats.available_books }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Borrowed books</div><div class="stat-value">{{ stats.borrowed_books }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Total members</div><div class="stat-value">{{ stats.total_members }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Active members</div><div class="stat-value">{{ stats.active_members }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Expired memberships</div><div class="stat-value {{ 'warn' if stats.expired_members else '' }}">{{ stats.expired_members }}</div></div>
+</div>
+
+<h2>Quick actions</h2>
+<div class="hub-grid" style="margin-bottom:32px;">
+  <a class="hub-tile" href="{{ url_for('admin_add_book') }}"><span class="hub-icon">＋</span><h3>Add Book</h3><p>Add a new title to the catalog.</p></a>
+  <a class="hub-tile" href="{{ url_for('admin_add_member') }}"><span class="hub-icon">👤</span><h3>Add Member</h3><p>Register a new member.</p></a>
+  <a class="hub-tile" href="{{ url_for('admin_books') }}"><span class="hub-icon">▤</span><h3>Manage Books</h3><p>Search, edit, and retire titles.</p></a>
+  <a class="hub-tile" href="{{ url_for('admin_members') }}"><span class="hub-icon">☰</span><h3>Manage Members</h3><p>Browse and inspect every member.</p></a>
+  <a class="hub-tile" href="{{ url_for('admin_desk_borrow') }}"><span class="hub-icon">↗</span><h3>Borrow / Return</h3><p>Desk-assisted issue and return.</p></a>
+  <a class="hub-tile" href="{{ url_for('admin_desk_renew') }}"><span class="hub-icon">↻</span><h3>Membership Management</h3><p>Renew a member's plan.</p></a>
+</div>
+
+{% if stats.expiring_soon %}
+<h2>Memberships expiring within 7 days</h2>
+<div class="table-wrap" style="margin-bottom:28px;">
+  <table class="ledger">
+    <thead><tr><th>Member</th><th>Expires</th><th>Days left</th></tr></thead>
+    <tbody>
+      {% for e in stats.expiring_soon %}
+      <tr>
+        <td><a href="{{ url_for('admin_member_detail', member_id=e.id) }}">{{ e.name }}</a> <small class="id-tag">{{ e.member_code }}</small></td>
+        <td>{{ e.expiry }}</td>
+        <td><span class="badge {{ 'badge-overdue' if e.days_left <= 2 else 'badge-pro' }}">{{ e.days_left }}d</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="grid-2">
+  <div>
+    <h2>Overdue right now</h2>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Member</th><th>Book</th><th>Days overdue</th><th>Fine</th></tr></thead>
+        <tbody>
+          {% for l in stats.overdue %}
+          <tr>
+            <td><a href="{{ url_for('admin_member_detail', member_id=l.member_id) }}">{{ l.member_name }}</a><br><small class="id-tag">{{ l.member_code }}</small></td>
+            <td>{{ l.book_name }}</td>
+            <td><span class="badge badge-overdue">{{ l.days_held - 3 }}d</span></td>
+            <td>₹{{ "{:,}".format(l.fine) }}</td>
+          </tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="4">Nothing overdue.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <h2>Recent activity</h2>
+    <div class="panel" style="margin-bottom:0;">
+      {% for a in activity %}
+      <div class="activity-item">
+        <div class="activity-dot"></div>
+        <div>
+          <div class="activity-text">{{ a.message }}</div>
+          <div class="activity-time">{{ a.ts }}</div>
+        </div>
+      </div>
+      {% else %}
+      <p class="muted" style="margin:0;">No activity logged yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

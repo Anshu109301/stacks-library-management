@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="topbar">
+  <a href="{{ url_for('home') }}" class="brand" style="text-decoration:none;">
+    <span class="brand-mark">S</span>
+    <div>
+      <div class="brand-name">Stacks</div>
+    </div>
+  </a>
+  <div class="topbar-links">
+    <a href="{{ url_for('catalog') }}" class="btn btn-outline btn-sm">Browse catalog</a>
+    {% if member_verified %}
+      <a href="{{ url_for('member_dashboard') }}" class="btn btn-outline btn-sm">My dashboard</a>
+    {% else %}
+      <a href="{{ url_for('member_verify') }}" class="btn btn-outline btn-sm">Member access</a>
+    {% endif %}
+    {% if is_admin %}
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-sm">Admin dashboard</a>
+    {% else %}
+      <a href="{{ url_for('admin_login') }}" class="btn btn-primary btn-sm">Admin access</a>
+    {% endif %}
+  </div>
+</div>
+<div class="public-content">
+  {% block content %}{% endblock %}
+</div>
+{% endblock %}

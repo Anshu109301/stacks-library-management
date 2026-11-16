@@ -1,0 +1,65 @@
+{% extends "_shell_member.html" %}
+{% block title %}Return a book{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Return</div>
+    <h1>Return a book</h1>
+    <p>Member: <span class="identity-chip">{{ session_member_name }} · <span class="id-tag">{{ session_member_code }}</span></span></p>
+  </div>
+</div>
+
+{% if success %}
+<div class="success-card">
+  <h3>Book Returned</h3>
+  <p>'{{ success.book_name }}' has been marked as <strong>{{ success.condition_label }}</strong>.</p>
+  <table class="ledger" style="background:transparent; border:none; margin-bottom:10px;">
+    <tbody>
+      {% if success.fine > 0 %}<tr><td style="width:60%;">Late fine ({{ success.late_days }} day(s))</td><td>₹{{ "{:,}".format(success.fine) }}</td></tr>{% endif %}
+      {% if success.condition_charge > 0 %}<tr><td>Condition charge</td><td>₹{{ "{:,}".format(success.condition_charge) }}</td></tr>{% endif %}
+      <tr><td><strong>Total due</strong></td><td><strong>₹{{ "{:,}".format(success.total_charge) }}</strong></td></tr>
+    </tbody>
+  </table>
+  {% if success.total_charge == 0 %}<p class="muted" style="margin-bottom:0;">No charges — thank you, on time and in good condition!</p>{% endif %}
+  {% if success.removed_from_circulation %}<p class="muted" style="margin-bottom:0;">This copy has been retired from the catalog.</p>{% endif %}
+  {% if success.reservation_alert %}
+    <p class="muted" style="margin-bottom:0;">{{ success.reservation_alert.member_name }} ({{ success.reservation_alert.member_code }}) has this title reserved — library staff will be notified.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if profile and profile.books %}
+<h2>Currently borrowed</h2>
+<div class="grid-3">
+  {% for b in profile.books %}
+  <div class="panel" style="margin-bottom:0;">
+    <h3 style="margin-bottom:4px;">{{ b.name }}</h3>
+    <p class="muted" style="margin-bottom:10px;">Issued {{ b.issue_date }}</p>
+    {% if b.overdue %}
+      <span class="badge badge-overdue">Overdue {{ b.days_held - 3 }}d · ₹{{ b.fine }}</span>
+    {% else %}
+      <span class="due-chip">Due {{ b.due_date }}</span>
+    {% endif %}
+    <form method="post" style="margin-top:14px;">
+    <input type="hidden" name="loan_id" value="{{ b.loan_id }}">
+      <div class="field" style="margin-bottom:10px;">
+        <label>Book condition</label>
+        <select name="condition">
+          <option value="good">Good condition — no charge</option>
+          <option value="slight">Slightly worn / torn — 10% of price</option>
+          <option value="heavy">Heavily worn / damaged — full price + ₹100</option>
+          <option value="lost">Lost — full price + ₹100</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Return this book</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">📗</div>
+  <p><strong>Nothing to return.</strong><br>You don't have any books checked out right now.</p>
+</div>
+{% endif %}
+{% endblock %}

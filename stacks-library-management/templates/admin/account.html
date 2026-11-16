@@ -1,0 +1,30 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Account{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Account</div>
+    <h1>Admin account</h1>
+    <p>Signed in as <strong>{{ session.get('admin_username') }}</strong>.</p>
+  </div>
+</div>
+
+<div class="panel" style="max-width:440px;">
+  <h3>Change password</h3>
+  <form method="post">
+    <div class="field">
+      <label for="current_password">Current password</label>
+      <input type="password" id="current_password" name="current_password" required>
+    </div>
+    <div class="field">
+      <label for="new_password">New password</label>
+      <input type="password" id="new_password" name="new_password" required minlength="6">
+    </div>
+    <div class="field">
+      <label for="confirm_password">Confirm new password</label>
+      <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+    </div>
+    <button type="submit" class="btn btn-primary">Update password</button>
+  </form>
+</div>
+{% endblock %}

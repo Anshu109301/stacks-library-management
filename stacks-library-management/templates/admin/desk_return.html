@@ -1,0 +1,75 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Process a return{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Desk</div>
+    <h1>Process a return</h1>
+    <p>Look up a member to see what they're currently holding.</p>
+  </div>
+</div>
+
+{% if result %}
+  {% if result.error %}
+    <div class="panel" style="border-color:rgba(208,52,44,0.3); max-width:520px;"><p style="color:var(--red); margin:0;">{{ result.error }}</p></div>
+  {% elif result.ok %}
+    <div class="success-card" style="max-width:520px;">
+      <h3>Book Returned</h3>
+      <p>{{ result.member_name }} · <span class="id-tag">{{ result.member_code }}</span></p>
+      <p>'{{ result.book_name }}' marked as <strong>{{ result.condition_label }}</strong>.</p>
+      <table class="ledger" style="background:transparent; border:none; margin-bottom:10px;">
+        <tbody>
+          {% if result.fine > 0 %}<tr><td style="width:60%;">Late fine ({{ result.late_days }} day(s))</td><td>₹{{ "{:,}".format(result.fine) }}</td></tr>{% endif %}
+          {% if result.condition_charge > 0 %}<tr><td>Condition charge</td><td>₹{{ "{:,}".format(result.condition_charge) }}</td></tr>{% endif %}
+          <tr><td><strong>Total due</strong></td><td><strong>₹{{ "{:,}".format(result.total_charge) }}</strong></td></tr>
+        </tbody>
+      </table>
+      {% if result.removed_from_circulation %}<p class="muted" style="margin-bottom:0;">This copy has been retired from the catalog.</p>{% endif %}
+      {% if result.reservation_alert %}<p class="muted" style="margin-top:8px; margin-bottom:0;">{{ result.reservation_alert.member_name }} ({{ result.reservation_alert.member_code }}) has this reserved.</p>{% endif %}
+    </div>
+  {% endif %}
+{% endif %}
+
+<div class="panel" style="max-width:420px;">
+  <form method="get" style="margin-bottom:0;">
+    <div class="field">
+      <label for="lookup_code">Look up Member ID</label>
+      <input type="text" id="lookup_code" name="member_code" placeholder="LIB10245" value="{{ lookup_code }}">
+    </div>
+    <button type="submit" class="btn btn-outline">Look up</button>
+  </form>
+</div>
+
+{% if profile %}
+<h2>{{ profile.member.name }}'s current books</h2>
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Book</th><th>Issued</th><th>Status</th><th>Condition &amp; return</th></tr></thead>
+    <tbody>
+      {% for b in profile.books %}
+      <tr>
+        <td>{{ b.name }}</td>
+        <td>{{ b.issue_date }}</td>
+        <td>{% if b.overdue %}<span class="badge badge-overdue">Overdue {{ b.days_held - 3 }}d</span>{% else %}<span class="due-chip">Due {{ b.due_date }}</span>{% endif %}</td>
+        <td>
+          <form method="post" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <input type="hidden" name="member_code" value="{{ profile.member.member_code }}">
+            <input type="hidden" name="loan_id" value="{{ b.loan_id }}">
+            <select name="condition" style="width:auto; padding:6px 8px; font-size:0.8rem;">
+              <option value="good">Good</option>
+              <option value="slight">Slightly worn (10%)</option>
+              <option value="heavy">Heavily damaged (full + ₹100)</option>
+              <option value="lost">Lost (full + ₹100)</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Return</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="4">Nothing currently borrowed.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

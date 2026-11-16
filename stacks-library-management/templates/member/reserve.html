@@ -1,0 +1,37 @@
+{% extends "_shell_member.html" %}
+{% block title %}Reserve a title{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Reserve</div>
+    <h1>Reserve a title</h1>
+    <p>For books that are fully checked out — we'll flag it the moment a copy comes back.</p>
+  </div>
+</div>
+
+{% if result %}
+  {% if result.error %}<div class="panel" style="border-color:rgba(208,52,44,0.3);"><p style="color:var(--red); margin:0;">{{ result.error }}</p></div>
+  {% elif result.ok %}<div class="success-card"><h3>Reserved</h3><p style="margin:0;">'{{ result.book_name }}' is now reserved for you.</p></div>{% endif %}
+{% endif %}
+
+{% if out_of_stock %}
+<div class="grid-3">
+  {% for b in out_of_stock %}
+  <div class="panel" style="margin-bottom:0;">
+    <h3 style="margin-bottom:4px;">{{ b.name }}</h3>
+    <p class="muted" style="margin-bottom:10px;">{{ b.genre or "—" }}</p>
+    <span class="badge badge-expired">Out of stock</span>
+    <form method="post" style="margin-top:14px;">
+      <input type="hidden" name="book_id" value="{{ b.id }}">
+      <button type="submit" class="btn btn-primary btn-sm" {{ 'data-active' if preselect == b.id }}>Reserve</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">🎉</div>
+  <p>Everything in the catalog currently has copies available.</p>
+</div>
+{% endif %}
+{% endblock %}

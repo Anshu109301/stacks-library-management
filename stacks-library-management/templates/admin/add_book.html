@@ -1,0 +1,57 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Add a book{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Catalog</div>
+    <h1>Add a book</h1>
+    <p>New titles appear in the catalog and become borrowable immediately.</p>
+  </div>
+</div>
+
+<div class="panel" style="max-width:620px;">
+  <form method="post">
+    <div class="field">
+      <label for="name">Title</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for="author">Author</label>
+        <input type="text" id="author" name="author">
+      </div>
+      <div class="field">
+        <label for="isbn">ISBN <small>(optional)</small></label>
+        <input type="text" id="isbn" name="isbn">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for="publisher">Publisher <small>(optional)</small></label>
+        <input type="text" id="publisher" name="publisher">
+      </div>
+      <div class="field">
+        <label for="pub_year">Publication year <small>(optional)</small></label>
+        <input type="number" id="pub_year" name="pub_year" min="1400" max="2100">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label for="price">Price (₹)</label>
+        <input type="number" id="price" name="price" min="0" required>
+      </div>
+      <div class="field">
+        <label for="quantity">Copies in stock</label>
+        <input type="number" id="quantity" name="quantity" min="0" required>
+      </div>
+    </div>
+
+    {% include "admin/_genre_picker.html" %}
+
+    <div class="actions-row">
+      <button type="submit" class="btn btn-primary">Add to catalog</button>
+      <a href="{{ url_for('admin_books') }}" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Borrow history{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Desk</div>
+    <h1>Borrow history</h1>
+    <p>Most recent {{ history|length }} record(s), newest first.</p>
+  </div>
+  <a href="{{ url_for('admin_export', kind='history') }}" class="btn btn-outline">Export CSV</a>
+</div>
+
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Member</th><th>Book</th><th>Issued</th><th>Returned</th><th>Status</th><th>Condition</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.member_name }}<br><small class="id-tag">{{ h.member_code }}</small></td>
+        <td>{{ h.book_name }}</td>
+        <td>{{ h.issue_date }}</td>
+        <td>{{ h.return_date or "—" }}</td>
+        <td>{% if h.return_date %}<span class="badge badge-active">Returned</span>{% else %}<span class="badge badge-overdue">Still out</span>{% endif %}</td>
+        <td>
+          {% if h.condition == 'lost' %}<span class="badge badge-expired">Lost</span>
+          {% elif h.condition == 'heavy' %}<span class="badge badge-expired">Damaged</span>
+          {% elif h.condition == 'slight' %}<span class="badge badge-pro">Worn</span>
+          {% elif h.return_date %}<span class="badge badge-active">Good</span>
+          {% else %}—{% endif %}
+          {% if h.condition_charge %}<br><small>₹{{ "{:,}".format(h.condition_charge) }}</small>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="6">No borrow records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

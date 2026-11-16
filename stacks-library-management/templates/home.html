@@ -1,0 +1,32 @@
+{% extends "_shell_public.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<div class="hero">
+  <span class="hero-badge">Premium library management</span>
+  <h1>A calmer way to run the library.</h1>
+  <p class="lede">Browse the catalog, verify your Member ID to borrow or renew, and let staff handle the rest — all in one clean, fast place.</p>
+  <div class="hero-actions">
+    <a href="{{ url_for('member_verify') }}" class="btn btn-primary">Verify Membership</a>
+    <a href="{{ url_for('catalog') }}" class="btn btn-outline">Browse the catalog</a>
+    <a href="{{ url_for('admin_login') }}" class="btn btn-outline">Admin Access</a>
+  </div>
+</div>
+
+<div class="hub-grid" style="margin-top:50px;">
+  <div class="hub-tile">
+    <span class="hub-icon">◎</span>
+    <h3>Verify &amp; borrow</h3>
+    <p>Enter your Member ID to see your dashboard, borrow or return books, and renew your membership.</p>
+  </div>
+  <div class="hub-tile">
+    <span class="hub-icon">▤</span>
+    <h3>Open catalog</h3>
+    <p>Search titles by name, author, ISBN or genre — no account needed to look around.</p>
+  </div>
+  <div class="hub-tile">
+    <span class="hub-icon">⚿</span>
+    <h3>Staff console</h3>
+    <p>Admins sign in separately to manage the catalog, members, and circulation desk.</p>
+  </div>
+</div>
+{% endblock %}

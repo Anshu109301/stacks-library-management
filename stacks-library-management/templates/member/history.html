@@ -1,0 +1,37 @@
+{% extends "_shell_member.html" %}
+{% block title %}Borrowing history{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">History</div>
+    <h1>Borrowing history</h1>
+    <p>{{ history|length }} record(s), newest first.</p>
+  </div>
+</div>
+
+{% if history %}
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Book</th><th>Author</th><th>Issued</th><th>Returned</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.book_name }}</td>
+        <td><small>{{ h.author or "—" }}</small></td>
+        <td>{{ h.issue_date }}</td>
+        <td>
+          {% if h.return_date %}{{ h.return_date }}
+          {% else %}<span class="badge badge-overdue">Still out</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">📖</div>
+  <p>No borrowing history yet.</p>
+</div>
+{% endif %}
+{% endblock %}

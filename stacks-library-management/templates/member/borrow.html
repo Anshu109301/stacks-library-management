@@ -1,0 +1,46 @@
+{% extends "_shell_member.html" %}
+{% block title %}Borrow a book{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Borrow</div>
+    <h1>Borrow a book</h1>
+    <p>Borrowing for <span class="identity-chip">{{ session_member_name }} · <span class="id-tag">{{ session_member_code }}</span></span></p>
+  </div>
+</div>
+
+{% if success %}
+<div class="success-card">
+  <h3>Book Borrowed Successfully 📚</h3>
+  <p>'{{ success.book_name }}' has been added to {{ success.member_name }}'s borrowed books.</p>
+  <p class="muted" style="margin-bottom:0;">Due date: <strong>{{ success.due_date }}</strong></p>
+</div>
+{% endif %}
+
+<form method="get" class="search-bar" style="max-width:420px;">
+  <input type="text" name="q" placeholder="Search available titles…" value="{{ search }}">
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+
+{% if available %}
+<div class="grid-3">
+  {% for b in available %}
+  <div class="panel" style="margin-bottom:0;">
+    <div class="book-cover-placeholder" style="max-width:80px; margin-bottom:10px; font-size:1.2rem;">{{ b.name[0]|upper }}</div>
+    <h3 style="margin-bottom:2px;">{{ b.name }}</h3>
+    <p class="muted" style="margin-bottom:8px;">{{ b.author or "Unknown author" }}</p>
+    <span class="badge badge-active">{{ b.quantity }} available</span>
+    <form method="post" style="margin-top:14px;">
+      <input type="hidden" name="book_id" value="{{ b.id }}">
+      <button type="submit" class="btn btn-primary btn-sm">Confirm Borrow</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">📚</div>
+  <p>No available titles match that search right now.</p>
+</div>
+{% endif %}
+{% endblock %}

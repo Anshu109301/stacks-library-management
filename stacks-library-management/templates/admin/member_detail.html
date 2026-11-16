@@ -1,0 +1,67 @@
+{% extends "_shell_admin.html" %}
+{% block title %}{{ profile.member.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Members</div>
+    <h1>{{ profile.member.name }}</h1>
+    <p><span class="id-tag">{{ profile.member.member_code }}</span>{% if profile.member.email %} · {{ profile.member.email }}{% endif %}{% if profile.member.phone %} · {{ profile.member.phone }}{% endif %}</p>
+  </div>
+  <div class="actions-row" style="margin-top:0;">
+    <a href="{{ url_for('admin_desk_renew', member_code=profile.member.member_code) }}" class="btn btn-outline">Renew</a>
+    <a href="{{ url_for('admin_member_suggestions', member_id=profile.member.id) }}" class="btn btn-outline">Suggestions</a>
+    <a href="{{ url_for('admin_members') }}" class="btn btn-outline">Back to members</a>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="grid-2" style="margin-bottom:6px;">
+    <div>
+      <span class="badge {{ 'badge-pro' if profile.plan.key == 1 else 'badge-normal' }}">{{ profile.plan.label }}</span>
+      <span class="badge {{ 'badge-expired' if profile.is_expired else 'badge-active' }}">{{ 'Expired' if profile.is_expired else 'Active' }}</span>
+    </div>
+    <div style="text-align:right;">
+      <div class="muted" style="font-size:0.82rem;">Expiry date</div>
+      <div style="font-weight:700; font-size:1.2rem; color:var(--ink);">{{ profile.member.membership_expiry }}</div>
+    </div>
+  </div>
+  <hr class="divider">
+  <p class="muted">Holding {{ profile.books|length }} of {{ profile.book_limit }} allowed book(s).</p>
+
+  <div class="table-wrap">
+    <table class="ledger">
+      <thead><tr><th>Book</th><th>Genre</th><th>Issued</th><th>Status</th><th>Running fine</th></tr></thead>
+      <tbody>
+        {% for b in profile.books %}
+        <tr>
+          <td>{{ b.name }}</td>
+          <td><small>{{ b.genre or "—" }}</small></td>
+          <td>{{ b.issue_date }}</td>
+          <td>
+            {% if b.overdue %}<span class="badge badge-overdue">Overdue {{ b.days_held - 3 }}d</span>
+            {% else %}<span class="due-chip">Due {{ b.due_date }}</span>{% endif %}
+          </td>
+          <td>{{ "₹%d"|format(b.fine) if b.fine else "—" }}</td>
+        </tr>
+        {% else %}
+        <tr class="empty-row"><td colspan="5">No books currently borrowed.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2>Borrowing history</h2>
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Book</th><th>Issued</th><th>Returned</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+      <tr><td>{{ h.book_name }}</td><td>{{ h.issue_date }}</td><td>{{ h.return_date or "Still out" }}</td></tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="3">No borrowing history yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

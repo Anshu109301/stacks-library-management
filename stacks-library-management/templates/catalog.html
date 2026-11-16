@@ -1,0 +1,51 @@
+{% extends "_shell_public.html" %}
+{% block title %}Catalog{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Open catalog</div>
+    <h1>Browse the collection</h1>
+    <p>{{ books|length }} title(s) matching your filters.</p>
+  </div>
+</div>
+
+<form method="get" class="search-bar">
+  <input type="text" name="q" placeholder="Search by title, author or ISBN…" value="{{ search }}">
+  <select name="genre" onchange="this.form.submit()">
+    <option value="">All genres</option>
+    {% for g in genres %}
+    <option value="{{ g }}" {{ 'selected' if genre == g }}>{{ g }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-outline">Filter</button>
+</form>
+
+<div class="pill-filters">
+  {% for s, label in [('id','Newest'), ('name','Title A–Z'), ('qty','Most available'), ('genre','Genre')] %}
+  <a class="{{ 'active' if sort == s }}" href="{{ url_for('catalog', q=search, genre=genre, sort=s) }}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+{% if books %}
+<div class="grid-3">
+  {% for b, avail in books %}
+  <a href="{{ url_for('book_detail', book_id=b.id) }}" class="hub-tile" style="text-decoration:none;">
+    <div class="book-cover-placeholder" style="margin-bottom:12px;">{{ b.name[0]|upper }}</div>
+    <h3 style="margin-bottom:2px;">{{ b.name }}</h3>
+    <p style="margin-bottom:8px;">{{ b.author or "Unknown author" }}</p>
+    {% if b.genre %}<p style="font-size:0.78rem;">{{ b.genre }}</p>{% endif %}
+    {% if avail.available > 0 %}
+      <span class="badge badge-active">Available · {{ avail.available }}</span>
+    {% else %}
+      <span class="badge badge-expired">Out of stock</span>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">📚</div>
+  <p>No books match your search — try a different title, author, or genre.</p>
+</div>
+{% endif %}
+{% endblock %}

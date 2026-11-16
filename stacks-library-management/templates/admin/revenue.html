@@ -1,0 +1,38 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Revenue{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Overview</div>
+    <h1>Revenue report</h1>
+    <p>Membership income plus fines collected on returned books.</p>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="panel">
+    <h3>Membership income</h3>
+    <table class="ledger">
+      <tbody>
+        <tr><td>Normal memberships ({{ report.normal_count }})</td><td>₹{{ "{:,}".format(report.normal_rev) }}</td></tr>
+        <tr><td>Pro memberships ({{ report.pro_count }})</td><td>₹{{ "{:,}".format(report.pro_rev) }}</td></tr>
+        <tr><td><strong>Subtotal</strong></td><td><strong>₹{{ "{:,}".format(report.normal_rev + report.pro_rev) }}</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="panel">
+    <h3>Fines &amp; condition charges</h3>
+    <table class="ledger">
+      <tbody>
+        <tr><td>Late-return fines</td><td>₹{{ "{:,}".format(report.fine_total) }}</td></tr>
+        <tr><td>Condition charges ({{ report.worn_count }} worn · {{ report.damaged_count }} damaged · {{ report.lost_count }} lost)</td><td>₹{{ "{:,}".format(report.damage_total) }}</td></tr>
+        <tr><td><strong>Subtotal</strong></td><td><strong>₹{{ "{:,}".format(report.fine_total + report.damage_total) }}</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-tile"><div class="stat-label">Total revenue to date</div><div class="stat-value">₹{{ "{:,}".format(report.total) }}</div></div>
+</div>
+{% endblock %}

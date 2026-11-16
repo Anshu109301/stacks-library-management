@@ -1,0 +1,60 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Renew membership{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Desk</div>
+    <h1>Renew membership</h1>
+    <p>Look up a member by Member ID to renew their plan.</p>
+  </div>
+</div>
+
+{% if not quote %}
+<div class="panel" style="max-width:480px;">
+  <form method="post">
+    <input type="hidden" name="step" value="quote">
+    <div class="field">
+      <label for="member_code">Member ID</label>
+      <input type="text" id="member_code" name="member_code" placeholder="LIB10245" value="{{ member_code }}" required>
+    </div>
+    <div class="field">
+      <label>Plan</label>
+      <div class="plan-pick">
+        <label class="plan-card"><input type="radio" name="plan" value="normal" {% if not member or member.MEM_TYPE == 0 %}checked{% endif %}> Normal</label>
+        <label class="plan-card"><input type="radio" name="plan" value="pro" {% if member and member.MEM_TYPE == 1 %}checked{% endif %}> Pro</label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Get renewal quote</button>
+  </form>
+</div>
+{% else %}
+  {% if quote.error %}
+    <div class="panel" style="border-color:rgba(208,52,44,0.3); max-width:480px;"><p style="color:var(--red); margin:0;">{{ quote.error }}</p></div>
+    <a href="{{ url_for('admin_desk_renew') }}" class="btn btn-outline" style="margin-top:14px;">Try again</a>
+  {% else %}
+    <div class="panel" style="max-width:480px;">
+      <h3>Renewal summary — {{ quote.member.name }}</h3>
+      <p><span class="id-tag">{{ quote.member.member_code }}</span></p>
+      <table class="ledger" style="margin-bottom:16px;">
+        <tbody>
+          <tr><td>Plan</td><td>{{ quote.new_plan.label }}</td></tr>
+          <tr><td>Membership fee</td><td>₹{{ "{:,}".format(quote.new_plan.fee) }}</td></tr>
+          <tr><td>Late fine {% if quote.late_days %}({{ quote.late_days }} day(s)){% endif %}</td><td>₹{{ "{:,}".format(quote.late_fine) }}</td></tr>
+          <tr><td><strong>Total payable</strong></td><td><strong>₹{{ "{:,}".format(quote.total) }}</strong></td></tr>
+          <tr><td>New expiry</td><td>{{ quote.new_expiry }}</td></tr>
+        </tbody>
+      </table>
+      <form method="post">
+        <input type="hidden" name="step" value="confirm">
+        <input type="hidden" name="member_code" value="{{ quote.member.member_code }}">
+        <input type="hidden" name="plan" value="{{ 'pro' if quote.new_plan.key == 1 else 'normal' }}">
+        <input type="hidden" name="new_expiry" value="{{ quote.new_expiry }}">
+        <div class="actions-row">
+          <button type="submit" class="btn btn-primary">Confirm &amp; renew</button>
+          <a href="{{ url_for('admin_desk_renew') }}" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

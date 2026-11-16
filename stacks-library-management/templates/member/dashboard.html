@@ -1,0 +1,60 @@
+{% extends "_shell_member.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">{{ greeting }}</div>
+    <h1>{{ greeting }}, {{ profile.member.name.split(' ')[0] }} 👋</h1>
+    <p><span class="id-tag">{{ profile.member.member_code }}</span></p>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-tile">
+    <div class="stat-label">Currently borrowed</div>
+    <div class="stat-value">{{ profile.books|length }}</div>
+    <div class="stat-sub">of {{ profile.book_limit }} allowed</div>
+  </div>
+  <div class="stat-tile">
+    <div class="stat-label">Due soon</div>
+    <div class="stat-value {{ 'warn' if profile.due_soon_count else '' }}">{{ profile.due_soon_count }}</div>
+  </div>
+  <div class="stat-tile">
+    <div class="stat-label">Membership</div>
+    <div class="stat-value" style="font-size:1.3rem;">
+      <span class="badge {{ 'badge-expired' if profile.is_expired else 'badge-active' }}">{{ 'Expired' if profile.is_expired else 'Active' }}</span>
+      <span class="badge {{ 'badge-pro' if profile.plan.key == 1 else 'badge-normal' }}">{{ profile.plan.label }}</span>
+    </div>
+  </div>
+  <div class="stat-tile">
+    <div class="stat-label">Membership expires</div>
+    <div class="stat-value" style="font-size:1.3rem;">{{ profile.member.membership_expiry }}</div>
+  </div>
+</div>
+
+<h2>Your books</h2>
+{% if profile.books %}
+<div class="grid-3">
+  {% for b in profile.books %}
+  <div class="panel" style="margin-bottom:0;">
+    <h3 style="margin-bottom:4px;">{{ b.name }}</h3>
+    <p class="muted" style="margin-bottom:10px;">{{ b.genre or "—" }}</p>
+    {% if b.overdue %}
+      <span class="badge badge-overdue">Overdue {{ b.days_held - 3 }}d · ₹{{ b.fine }}</span>
+    {% else %}
+      <span class="due-chip">Due {{ b.due_date }}</span>
+    {% endif %}
+    <div class="actions-row">
+      <a href="{{ url_for('member_return') }}" class="btn btn-outline btn-sm">Return</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="big">📖</div>
+  <p><strong>No books borrowed yet.</strong><br>Your next great read is waiting for you.</p>
+  <a href="{{ url_for('member_borrow') }}" class="btn btn-primary">Browse &amp; borrow</a>
+</div>
+{% endif %}
+{% endblock %}

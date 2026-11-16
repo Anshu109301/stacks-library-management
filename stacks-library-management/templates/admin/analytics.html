@@ -1,0 +1,92 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Analytics{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Overview</div>
+    <h1>Analytics</h1>
+    <p>
+      {% if top_genre %}Most-read genre overall: <strong>{{ top_genre.genre }}</strong> ({{ top_genre.count }} loan(s)) · {{ total_genres }} genres in the catalog.
+      {% else %}{{ total_genres }} genres in the catalog — no borrow history yet to analyze reading patterns.{% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-tile"><div class="stat-label">Normal members</div><div class="stat-value">{{ plan_dist['values'][0] }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Pro members</div><div class="stat-value">{{ plan_dist['values'][1] }}</div></div>
+  <div class="stat-tile"><div class="stat-label">Avg. days late</div><div class="stat-value">{{ avg_days_late }}</div><div class="stat-sub">on overdue returns</div></div>
+  <div class="stat-tile"><div class="stat-label">Books lost / damaged</div><div class="stat-value {{ 'warn' if (condition_dist['values'][2] + condition_dist['values'][3]) else '' }}">{{ condition_dist['values'][2] + condition_dist['values'][3] }}</div></div>
+</div>
+
+<div class="grid-2">
+  <div class="chart-box">
+    <h3>Catalog by genre</h3>
+    <img src="data:image/png;base64,{{ chart_catalog_genres }}" alt="Catalog by genre" style="max-width:100%; height:auto;">
+  </div>
+  <div class="chart-box">
+    <h3>Currently borrowed, by genre</h3>
+    <img src="data:image/png;base64,{{ chart_borrowed_genres }}" alt="Currently borrowed, by genre" style="max-width:100%; height:auto;">
+  </div>
+</div>
+
+<div class="grid-2" style="margin-top:18px;">
+  <div class="chart-box">
+    <h3>Membership plan split</h3>
+    <img src="data:image/png;base64,{{ chart_plan }}" alt="Membership plan split" style="max-width:100%; height:auto;">
+  </div>
+  <div class="chart-box">
+    <h3>Return condition breakdown</h3>
+    <img src="data:image/png;base64,{{ chart_condition }}" alt="Return condition breakdown" style="max-width:100%; height:auto;">
+  </div>
+</div>
+
+<div class="chart-box" style="margin-top:18px;">
+  <h3>Books issued per week (last 8 weeks)</h3>
+  <img src="data:image/png;base64,{{ chart_trend }}" alt="Books issued per week" style="max-width:100%; height:auto;">
+</div>
+
+<div class="grid-2" style="margin-top:18px;">
+  <div class="chart-box">
+    <h3>Fines &amp; condition charges collected per week</h3>
+    <img src="data:image/png;base64,{{ chart_revenue_trend }}" alt="Fines and condition charges collected per week" style="max-width:100%; height:auto;">
+  </div>
+  <div class="chart-box">
+    <h3>New members per week</h3>
+    <img src="data:image/png;base64,{{ chart_growth }}" alt="New members per week" style="max-width:100%; height:auto;">
+  </div>
+</div>
+
+<div class="grid-2" style="margin-top:18px;">
+  <div>
+    <h2>Most borrowed books</h2>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Title</th><th>Times borrowed</th></tr></thead>
+        <tbody>
+          {% for b in top_books %}
+          <tr><td>{{ b.name }}</td><td>{{ b.times_borrowed }}</td></tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="2">No borrow history yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <h2>Top borrowers</h2>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>Member</th><th>Books borrowed</th></tr></thead>
+        <tbody>
+          {% for b in top_borrowers %}
+          <tr><td>{{ b.name }} <small class="id-tag">{{ b.member_code }}</small></td><td>{{ b.books_borrowed }}</td></tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="2">No borrow history yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

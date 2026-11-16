@@ -1,0 +1,56 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Manage books{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Catalog</div>
+    <h1>Manage books</h1>
+    <p>{{ books|length }} title(s) matching your filters.</p>
+  </div>
+  <a href="{{ url_for('admin_add_book') }}" class="btn btn-primary">Add Book</a>
+</div>
+
+<form method="get" class="search-bar">
+  <input type="text" name="q" placeholder="Search by title, author or ISBN…" value="{{ search }}">
+  <select name="genre" onchange="this.form.submit()">
+    <option value="">All genres</option>
+    {% for g in genres %}<option value="{{ g }}" {{ 'selected' if genre == g }}>{{ g }}</option>{% endfor %}
+  </select>
+  <button type="submit" class="btn btn-outline">Filter</button>
+</form>
+
+<div class="pill-filters">
+  {% for s, label in [('id','Newest'), ('name','Title A–Z'), ('qty','Most available'), ('price','Highest price'), ('genre','Genre')] %}
+  <a class="{{ 'active' if sort == s }}" href="{{ url_for('admin_books', q=search, genre=genre, sort=s) }}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Price</th><th>Available</th><th></th></tr></thead>
+    <tbody>
+      {% for b, avail in books %}
+      <tr>
+        <td><a href="{{ url_for('admin_edit_book', book_id=b.id) }}">{{ b.name }}</a></td>
+        <td><small>{{ b.author or "—" }}</small></td>
+        <td><small>{{ b.genre or "—" }}</small></td>
+        <td>₹{{ "{:,}".format(b.price) }}</td>
+        <td>
+          {% if avail.available == 0 %}<span class="badge badge-expired">Out of stock</span>
+          {% else %}{{ avail.available }} / {{ avail.total }}{% endif %}
+        </td>
+        <td style="white-space:nowrap;">
+          <a href="{{ url_for('admin_edit_book', book_id=b.id) }}" class="btn btn-outline btn-sm">Edit</a>
+          <a href="{{ url_for('book_detail', book_id=b.id) }}" class="btn btn-outline btn-sm" target="_blank" rel="noopener">View</a>
+          <form method="post" action="{{ url_for('admin_delete_book', book_id=b.id) }}" style="display:inline;" data-confirm="Delete '{{ b.name }}' permanently? This can't be undone.">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="6">No books match — try clearing filters or add a new title.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

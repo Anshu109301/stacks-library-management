@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="shell">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">S</span>
+      <div>
+        <div class="brand-name">Stacks</div>
+        <div class="brand-tag">Member area</div>
+      </div>
+    </div>
+
+    <div class="identity-chip" style="margin: 0 8px 4px;">
+      <span class="id-tag">{{ session_member_code }}</span>
+    </div>
+    <div style="padding:0 8px 10px; font-size:0.85rem; font-weight:600;">{{ session_member_name }}</div>
+
+    <nav class="nav-group">
+      <a href="{{ url_for('home') }}" class="nav-link">🏠 Home</a>
+    </nav>
+
+    <nav class="nav-group">
+      <a href="{{ url_for('member_dashboard') }}" class="nav-link {{ 'active' if request.endpoint=='member_dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('member_borrow') }}" class="nav-link {{ 'active' if request.endpoint=='member_borrow' }}">Borrow a book</a>
+      <a href="{{ url_for('member_return') }}" class="nav-link {{ 'active' if request.endpoint=='member_return' }}">Return a book</a>
+      <a href="{{ url_for('member_renew') }}" class="nav-link {{ 'active' if request.endpoint=='member_renew' }}">Renew membership</a>
+      <a href="{{ url_for('member_reserve') }}" class="nav-link {{ 'active' if request.endpoint=='member_reserve' }}">Reserve a title</a>
+      <a href="{{ url_for('member_suggestions') }}" class="nav-link {{ 'active' if request.endpoint=='member_suggestions' }}">Suggestions</a>
+      <a href="{{ url_for('member_history') }}" class="nav-link {{ 'active' if request.endpoint=='member_history' }}">Borrowing history</a>
+      <a href="{{ url_for('catalog') }}" class="nav-link">Browse catalog</a>
+    </nav>
+
+    <a href="{{ url_for('member_logout') }}" class="nav-link logout">Sign out</a>
+  </aside>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

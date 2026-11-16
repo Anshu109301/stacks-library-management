@@ -1,0 +1,37 @@
+{% extends "_shell_member.html" %}
+{% block title %}Suggestions{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">For you</div>
+    <h1>Book suggestions</h1>
+    <p>Based on genres you've read before.</p>
+  </div>
+</div>
+
+{% if not data.history %}
+<p class="muted">No borrow history yet — here's what's popular in the meantime. Borrow a book and we'll start tailoring suggestions to you.</p>
+{% endif %}
+
+{% if data.groups %}
+  {% for group in data.groups %}
+  <div style="margin-top: 22px;">
+    <h3 style="margin-bottom:10px;">{{ group.reason }}</h3>
+    <div class="grid-3">
+      {% for b in group.books %}
+      <div class="panel" style="margin-bottom:0;">
+        <h3 style="margin-bottom:2px;">{{ b.name }}</h3>
+        <p class="muted" style="margin-bottom:8px;">{{ b.author or "Unknown author" }}</p>
+        <span class="badge badge-active">{{ b.quantity }} available</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+<div class="empty-state">
+  <div class="big">✨</div>
+  <p>No recommendations available right now — the catalog may be empty or everything in stock has already been borrowed by you.</p>
+</div>
+{% endif %}
+{% endblock %}

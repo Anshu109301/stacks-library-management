@@ -1,0 +1,48 @@
+{% extends "_shell_public.html" %}
+{% block title %}{{ book.name }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('catalog') }}" class="btn btn-outline btn-sm" style="margin-bottom:20px;">← Back to catalog</a>
+
+<div class="grid-2" style="align-items:start;">
+  <div>
+    <div class="book-cover-placeholder" style="max-width:260px;">{{ book.name[0]|upper }}</div>
+  </div>
+  <div class="panel">
+    <h1 style="margin-bottom:4px;">{{ book.name }}</h1>
+    <p class="muted" style="margin-bottom:14px;">{{ book.author or "Unknown author" }}</p>
+
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
+      {% for g in (book.genre or "").split(",") %}
+        {% if g.strip() %}<span class="badge badge-normal">{{ g.strip() }}</span>{% endif %}
+      {% endfor %}
+    </div>
+
+    <table class="ledger" style="margin-bottom:16px;">
+      <tbody>
+        {% if book.isbn %}<tr><td>ISBN</td><td>{{ book.isbn }}</td></tr>{% endif %}
+        {% if book.publisher %}<tr><td>Publisher</td><td>{{ book.publisher }}</td></tr>{% endif %}
+        {% if book.pub_year %}<tr><td>Published</td><td>{{ book.pub_year }}</td></tr>{% endif %}
+        <tr><td>Price</td><td>₹{{ "{:,}".format(book.price) }}</td></tr>
+      </tbody>
+    </table>
+
+    {% if avail.available > 0 %}
+      <span class="badge badge-active">Available · {{ avail.available }} of {{ avail.total }} copies</span>
+    {% else %}
+      <span class="badge badge-expired">Out of stock · {{ avail.total }} total copies</span>
+    {% endif %}
+
+    <div class="actions-row">
+      {% if member_verified %}
+        {% if avail.available > 0 %}
+          <a href="{{ url_for('member_borrow') }}" class="btn btn-primary">Borrow this book</a>
+        {% else %}
+          <a href="{{ url_for('member_reserve', book_id=book.id) }}" class="btn btn-primary">Reserve this book</a>
+        {% endif %}
+      {% else %}
+        <a href="{{ url_for('member_verify') }}" class="btn btn-primary">Verify Membership to borrow</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

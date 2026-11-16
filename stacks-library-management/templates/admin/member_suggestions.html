@@ -1,0 +1,34 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Suggestions for {{ member.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Members</div>
+    <h1>Suggestions for {{ member.name }}</h1>
+    <p><span class="id-tag">{{ member.member_code }}</span></p>
+  </div>
+  <a href="{{ url_for('admin_member_detail', member_id=member.id) }}" class="btn btn-outline">Back to profile</a>
+</div>
+
+{% if not data.history %}
+<p class="muted">No borrow history yet for this member — showing general recommendations instead.</p>
+{% endif %}
+
+{% if data.groups %}
+  {% for group in data.groups %}
+  <div class="table-wrap" style="margin-top:18px;">
+    <h3 style="margin-bottom:8px;">{{ group.reason }}</h3>
+    <table class="ledger">
+      <thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Available</th></tr></thead>
+      <tbody>
+        {% for b in group.books %}
+        <tr><td>{{ b.name }}</td><td><small>{{ b.author or "—" }}</small></td><td><small>{{ b.genre or "—" }}</small></td><td>{{ b.quantity }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+{% else %}
+<div class="empty-state"><div class="big">✨</div><p>No recommendations available — the catalog may be empty or fully borrowed by this member.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="shell">
+  <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark">S</span>
+      <div>
+        <div class="brand-name">Stacks</div>
+        <div class="brand-tag">Admin console</div>
+      </div>
+    </div>
+
+    <nav class="nav-group">
+      <div class="nav-label">General</div>
+      <a href="{{ url_for('home') }}" class="nav-link">🏠 Home</a>
+      <a href="{{ url_for('catalog') }}" class="nav-link">Public catalog</a>
+    </nav>
+
+    <nav class="nav-group">
+      <div class="nav-label">Overview</div>
+      <a href="{{ url_for('admin_dashboard') }}" class="nav-link {{ 'active' if request.endpoint=='admin_dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('admin_analytics') }}" class="nav-link {{ 'active' if request.endpoint=='admin_analytics' }}">Analytics</a>
+      <a href="{{ url_for('admin_revenue') }}" class="nav-link {{ 'active' if request.endpoint=='admin_revenue' }}">Revenue</a>
+    </nav>
+
+    <nav class="nav-group">
+      <div class="nav-label">Catalog</div>
+      <a href="{{ url_for('admin_books') }}" class="nav-link {{ 'active' if request.endpoint in ['admin_books','admin_add_book','admin_edit_book'] }}">Manage books</a>
+      <a href="{{ url_for('admin_reservations') }}" class="nav-link {{ 'active' if request.endpoint=='admin_reservations' }}">Reservations</a>
+    </nav>
+
+    <nav class="nav-group">
+      <div class="nav-label">Members</div>
+      <a href="{{ url_for('admin_members') }}" class="nav-link {{ 'active' if request.endpoint in ['admin_members','admin_member_detail'] }}">Manage members</a>
+      <a href="{{ url_for('admin_add_member') }}" class="nav-link {{ 'active' if request.endpoint=='admin_add_member' }}">Add member</a>
+    </nav>
+
+    <nav class="nav-group">
+      <div class="nav-label">Desk (borrow / return)</div>
+      <a href="{{ url_for('admin_desk_borrow') }}" class="nav-link {{ 'active' if request.endpoint=='admin_desk_borrow' }}">Issue a book</a>
+      <a href="{{ url_for('admin_desk_return') }}" class="nav-link {{ 'active' if request.endpoint=='admin_desk_return' }}">Process a return</a>
+      <a href="{{ url_for('admin_desk_renew') }}" class="nav-link {{ 'active' if request.endpoint=='admin_desk_renew' }}">Renew membership</a>
+      <a href="{{ url_for('admin_borrowed') }}" class="nav-link {{ 'active' if request.endpoint=='admin_borrowed' }}">Active loans</a>
+      <a href="{{ url_for('admin_history') }}" class="nav-link {{ 'active' if request.endpoint=='admin_history' }}">Borrow history</a>
+    </nav>
+
+    <nav class="nav-group">
+      <div class="nav-label">Account</div>
+      <a href="{{ url_for('admin_account') }}" class="nav-link {{ 'active' if request.endpoint=='admin_account' }}">{{ session.get('admin_username','admin') }}</a>
+    </nav>
+
+    <a href="{{ url_for('admin_logout') }}" class="nav-link logout">Sign out</a>
+  </aside>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

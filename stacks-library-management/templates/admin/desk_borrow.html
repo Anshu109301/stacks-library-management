@@ -1,0 +1,55 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Issue a book{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Desk</div>
+    <h1>Issue a book</h1>
+    <p>Look up any member by their Member ID and check out a title on their behalf.</p>
+  </div>
+</div>
+
+{% if result %}
+  {% if result.error %}
+    <div class="panel" style="border-color:rgba(208,52,44,0.3); max-width:520px;"><p style="color:var(--red); margin:0;">{{ result.error }}</p></div>
+  {% elif result.ok %}
+    <div class="success-card" style="max-width:520px;">
+      <h3>Book Borrowed Successfully 📚</h3>
+      <p>{{ result.member_name }} · <span class="id-tag">{{ result.member_code }}</span></p>
+      <p style="margin-bottom:0;">'{{ result.book_name }}' issued. Due date: <strong>{{ result.due_date }}</strong></p>
+    </div>
+  {% endif %}
+{% endif %}
+
+<div class="grid-2">
+  <div class="panel">
+    <h3>Check out a title</h3>
+    <form method="post">
+      <div class="field">
+        <label for="member_code">Member ID</label>
+        <input type="text" id="member_code" name="member_code" placeholder="LIB10245" value="{{ member.member_code if member else '' }}" required>
+      </div>
+      <div class="field">
+        <label for="book_id">Book ID</label>
+        <input type="number" id="book_id" name="book_id" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Issue book</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h3>Available right now</h3>
+    <div class="table-wrap">
+      <table class="ledger">
+        <thead><tr><th>ID</th><th>Title</th><th>In stock</th></tr></thead>
+        <tbody>
+          {% for b in available %}
+          <tr><td class="id-tag">#{{ b.id }}</td><td>{{ b.name }}</td><td>{{ b.quantity }}</td></tr>
+          {% else %}
+          <tr class="empty-row"><td colspan="3">Nothing in stock.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

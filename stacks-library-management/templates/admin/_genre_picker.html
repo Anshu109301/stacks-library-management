@@ -1,0 +1,14 @@
+<div class="field">
+  <label>Genres</label>
+  <div class="genre-picker" data-genre-picker data-genre-initial="{{ current_genres|join(',') if current_genres else '' }}">
+    <div data-genre-hidden></div>
+    <div class="genre-selected" data-genre-selected></div>
+    <input type="text" class="genre-search" data-genre-search placeholder="Search genres…">
+    <div class="genre-list" data-genre-list>
+      {% for g in genres %}
+      <span class="genre-option" data-genre="{{ g }}">{{ g }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <button type="button" class="btn btn-outline btn-sm" data-genre-clear style="margin-top:8px;">Clear selected genres</button>
+</div>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin Access{% endblock %}
+{% block body %}
+<div class="center-stage">
+  <div class="auth-card" style="position:relative;">
+    <a href="{{ url_for('home') }}" class="btn btn-outline btn-sm" aria-label="Close and return to home"
+       style="position:absolute; top:16px; right:16px; padding:4px 10px;">✕</a>
+    <div class="brand-mark" style="margin:0 auto 16px;">S</div>
+    <h1>Admin Access</h1>
+    <p class="sub">Staff sign-in for the library console.</p>
+    <form method="post" id="adminLoginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autofocus required autocomplete="username"
+               style="font-family:var(--font); letter-spacing:normal; text-align:left;">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary" id="adminLoginSubmit" style="width:100%; justify-content:center;">Sign in</button>
+    </form>
+    <p class="help-text" style="text-align:center; margin-top:16px;">Default: admin / admin123 — change this after first login.</p>
+    <a href="{{ url_for('home') }}" class="help-text" style="display:block; text-align:center; margin-top:8px;">← Back to home</a>
+  </div>
+</div>
+<script>
+  // Prevent duplicate submissions (e.g. impatient double-click) while the
+  // request is in flight — the button disables itself and clearly reflects
+  // that authentication is being checked.
+  document.getElementById('adminLoginForm').addEventListener('submit', function () {
+    var btn = document.getElementById('adminLoginSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+  });
+</script>
+{% endblock %}

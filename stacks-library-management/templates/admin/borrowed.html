@@ -1,0 +1,30 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Active loans{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Desk</div>
+    <h1>Active loans</h1>
+    <p>{{ loans|length }} book(s) currently checked out, oldest first.</p>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <table class="ledger">
+    <thead><tr><th>Member</th><th>Book</th><th>Issued</th><th>Status</th><th>Fine</th></tr></thead>
+    <tbody>
+      {% for l in loans %}
+      <tr>
+        <td><a href="{{ url_for('admin_member_detail', member_id=l.member_id) }}">{{ l.member_name }}</a><br><small class="id-tag">{{ l.member_code }}</small></td>
+        <td>{{ l.book_name }}</td>
+        <td>{{ l.issue_date }}</td>
+        <td>{% if l.overdue %}<span class="badge badge-overdue">Overdue</span>{% else %}<span class="badge badge-ontime">On time</span>{% endif %}</td>
+        <td>{{ "₹%d"|format(l.fine) if l.fine else "—" }}</td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="5">Nothing is currently checked out.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "_shell_admin.html" %}
+{% block title %}Welcome, {{ name }}{% endblock %}
+{% block content %}
+<div class="success-card" style="max-width:560px; text-align:center; padding:40px 34px;">
+  <div style="font-size:2.4rem; margin-bottom:6px;">🎉</div>
+  <h1 style="margin-bottom:4px;">Thank You for Joining!</h1>
+  <p class="muted">Welcome to the library, {{ name }}. Membership created successfully.</p>
+
+  <hr class="divider">
+
+  <div style="text-align:left;">
+    <table class="ledger" style="background:transparent; border:none;">
+      <tbody>
+        <tr><td style="width:40%;">Name</td><td><strong>{{ name }}</strong></td></tr>
+        <tr>
+          <td>Member ID</td>
+          <td>
+            <div style="font-size:1.5rem; font-weight:700; letter-spacing:0.06em; color:var(--blue-dark); font-family:var(--mono);">{{ member_code }}</div>
+          </td>
+        </tr>
+        {% if email %}<tr><td>Email</td><td>{{ email }}</td></tr>{% endif %}
+        {% if phone %}<tr><td>Phone</td><td>{{ phone }}</td></tr>{% endif %}
+        <tr><td>Membership</td><td><span class="badge badge-active">Active</span> <span class="badge {{ 'badge-pro' if plan.key==1 else 'badge-normal' }}">{{ plan.label }}</span></td></tr>
+        <tr><td>Valid until</td><td>{{ expiry }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions-row" style="justify-content:center;">
+    <button type="button" class="btn btn-primary" data-copy="{{ member_code }}">Copy Member ID</button>
+    <a href="{{ url_for('admin_member_detail', member_id=member_id) }}" class="btn btn-outline">View Member Profile</a>
+  </div>
+  <p class="help-text" style="margin-top:18px;">Give this Member ID to {{ name.split(' ')[0] }} — they'll use it to verify themselves and access borrowing, returns, and renewals.</p>
+</div>
+
+<a href="{{ url_for('admin_add_member') }}" class="btn btn-outline btn-sm">Add another member</a>
+{% endblock %}
